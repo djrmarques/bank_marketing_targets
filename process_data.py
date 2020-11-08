@@ -104,7 +104,10 @@ def transform_data(df: pd.DataFrame) -> pd.DataFrame:
     oh = OneHotEncoder(drop="first")
     oh.fit(train_data[categorical_features])
     cat_enc_df = pd.DataFrame(oh.transform(train_data[categorical_features]).toarray(), columns=oh.get_feature_names(categorical_features))
-    return train_data.select_dtypes(exclude="category").join(cat_enc_df)
+    train_data = train_data.select_dtypes(exclude="category").join(cat_enc_df)
+
+    # Standardize the data
+    return pd.DataFrame(RobustScaler().fit_transform(train_data), columns=train_data.columns)
 
 def logistic_feature_importance(df: pd.DataFrame):
     """ Fit Logistic Regression and plots the feature importance """
@@ -114,7 +117,7 @@ def logistic_feature_importance(df: pd.DataFrame):
     X = train_data.drop(label, axis=1)
     y = df[label]
 
-    mean_cross_val_score = cross_val_score(LogisticRegression(), X, y, cv=StratifiedKFold(5), scoring="f1").mean()
+    mean_cross_val_score = cross_val_score(LogisticRegression(max_iter=500, solver="liblinear"), X, y, cv=StratifiedKFold(5), scoring="f1").mean()
     clf = LogisticRegression()
     clf.fit(X, y)
     fig = px.bar(pd.Series(clf.coef_.flatten(), index=X.columns).sort_values(), title=f"Logistic regression feature importance. 5 Fold Cross Validation F1 score: {round(mean_cross_val_score, 2)}")

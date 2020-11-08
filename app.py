@@ -56,4 +56,4 @@ def update_cities(column):
     return bar_plot_disc_variables(df, column)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False, port=8050)

@@ -31,6 +31,8 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = 'Term Deposit Marketing Campaing '
 
+server = app.server
+
 # Create the webapp
 app.layout = html.Div(children=[
     html.H1(children='Term Deposit Marketing Campaing Dashboard'),

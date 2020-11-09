@@ -31,8 +31,6 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = 'Term Deposit Marketing Campaing '
 
-server = app.server
-
 # Create the webapp
 app.layout = html.Div(children=[
     html.H1(children='Term Deposit Marketing Campaing Dashboard'),
@@ -56,6 +54,8 @@ app.layout = html.Div(children=[
     [Input('cat-dropdown', 'value')])
 def update_cities(column):
     return bar_plot_disc_variables(df, column)
+
+application = app.server
 
 if __name__ == '__main__':
     app.run_server(debug=False, port=8050,  host='0.0.0.0')

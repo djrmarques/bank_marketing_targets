@@ -43,14 +43,15 @@ def plot_monthly_success(df: pd.DataFrame):
     ordered_months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
     plot_df = df[["month", "y_numeric"]].groupby("month").agg(
         n_calls=pd.NamedAgg(column="y_numeric", aggfunc=lambda x: x.shape[0]),
-        success_rate=pd.NamedAgg(column="y_numeric", aggfunc=lambda x: (x.sum()/x.shape[0])*100)).loc[ordered_months, :]
+        success_rate=pd.NamedAgg(column="y_numeric", aggfunc=lambda x: (x.sum()/x.shape[0])*100)
+        ).loc[ordered_months, :]
 
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     # Add traces
     fig.add_trace(
-        go.Scatter(x=plot_df.index, y=plot_df["n_calls"], name="# Calls"),
+        go.Scatter(x=plot_df.index, y=plot_df["n_calls"], name="# Contacted Clients"),
         secondary_y=False,
     )
 
@@ -61,14 +62,14 @@ def plot_monthly_success(df: pd.DataFrame):
 
     # Add figure title
     fig.update_layout(
-        title_text="# Number of calls and Success Rate"
+        title_text="# Number of Contacted Clients vs Success Rate"
     )
 
     # Set x-axis title
     fig.update_xaxes(title_text="Month")
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="# Calls", secondary_y=False)
+    fig.update_yaxes(title_text="# Contacted Clients", secondary_y=False)
     fig.update_yaxes(title_text="Success Rate [%]", secondary_y=True)
 
     return fig
@@ -77,7 +78,7 @@ def plot_monthly_success(df: pd.DataFrame):
 def box_plot_cont(df: pd.DataFrame):
     """ Plots the box plot of the continuous variables """
     cols = ["balance", "age", "campaign", "previous", "duration"]
-    fig = px.box(df[["y"] + cols].melt(id_vars="y"), x="y", y="value", facet_col="variable")
+    fig = px.box(df[["y"] + cols].rename(columns={"y": "Success"}).melt(id_vars="Success"), x="Success", y="value", facet_col="variable")
     fig.update_yaxes(matches=None)
 
     # Show the ticks for the graphs
@@ -85,7 +86,6 @@ def box_plot_cont(df: pd.DataFrame):
         fig.update_yaxes(showticklabels=True, col=i) # assuming second facet
 
     return fig
-
 def bar_plot_disc_variables(df: pd.DataFrame, feature: str):
     """ Plots the Bar plots for the discrete variables"""
     fig = px.bar(df[[feature, "y_numeric"]].groupby(feature).agg(
